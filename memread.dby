@@ -1,0 +1,59 @@
+import std.fs as fs
+import std.env as env
+import std.encoding as enc
+import std.binary as bin
+import std.buffer as buf
+
+let args = env.args()
+if len(args) == 0:
+    print("usage: dbyte run memread.dby dump.bin [hex-pattern]")
+else:
+    let path = args[0]
+    let data = fs.read_bytes(path)
+    let size = len(data)
+    if size > 32768:
+        print("DBYTE_MEMREAD_ERROR_SIZE_LIMIT")
+        print(size)
+    else:
+        print("DBYTE_MEMREAD_OFFLINE")
+        print("path")
+        print(path)
+        print("size_bytes")
+        print(size)
+        print("hex_dump")
+        print(enc.hex_encode(data))
+        print("typed_values_little_endian")
+        if size >= 1:
+            print("u8@0")
+            print(bin.u8(data, 0))
+            print("i8@0")
+            print(bin.i8(data, 0))
+        if size >= 2:
+            print("u16_le@0")
+            print(bin.u16_le(data, 0))
+            print("i16_le@0")
+            print(bin.i16_le(data, 0))
+        if size >= 4:
+            print("u32_le@0")
+            print(bin.u32_le(data, 0))
+            print("i32_le@0")
+            print(bin.i32_le(data, 0))
+        if size >= 8:
+            print("u64_le@0_low_u32")
+            print(bin.u32_le(data, 0))
+            print("u64_le@0_high_u32")
+            print(bin.u32_le(data, 4))
+        let offset = 0
+        while offset + 4 <= size:
+            print("u32_le_offset")
+            print(offset)
+            print(bin.u32_le(data, offset))
+            offset = offset + 4
+        if len(args) >= 2:
+            let pattern = enc.hex_decode(args[1])
+            let source = buf.from_bytes(data)
+            let match_offset = buf.find(source, pattern)
+            print("hex_pattern")
+            print(args[1])
+            print("match_offset")
+            print(match_offset)
