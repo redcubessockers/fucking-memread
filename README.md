@@ -1,4 +1,4 @@
-# memread-dbyte
+# fucking-memread
 
 A DByte-first memory inspection competitor for `siubikYT/memread`.
 
